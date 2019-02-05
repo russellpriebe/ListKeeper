@@ -14,6 +14,7 @@ import com.penda.listkeeper.adapter.CardListAdapter
 import com.penda.listkeeper.repository.ListRepository
 import com.penda.listkeeper.viewmodel.ListViewModel
 import com.penda.listkeeper.viewmodel.VMProviderFactory
+import kotlinx.android.synthetic.main.activity_main.*
 
 import kotlinx.android.synthetic.main.content_main.*
 
