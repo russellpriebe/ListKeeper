@@ -68,7 +68,7 @@ class ElementRepository(db: ListRoomDatabase, tag: String?) {
     }
 
     fun restore(element: ListElement, oldElement: ListElement) {
-        mListElementDao.update(oldElement.elementValue, oldElement.listTag, "active")
+        mListElementDao.complete(oldElement.elementValue, oldElement.listTag, "active")
     }
 
     fun getElementForEdit(name: String, tag: String): ListElement {
