@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#030d48</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="blue_gray">#FF28B8DF</color>
+    <color name="light_gray">#FFC6C6C6</color>
+    <color name="toolbar">#C06900</color>
+    <color name="nav_list_divider">#FFFF9933</color>
+    <color name="controls">#80C06900</color>
+    <color name="dark_gray">#FF3D3333</color>
+    <color name="fog">#80000000</color>
+    <color name="red_marker">#80F22E2F</color>
+    <color name="orange_marker">#BFE46F1C</color>
+    <color name="blue_marker">#bf011f29</color>
+    <color name="green_marker">#BF4BC077</color>
+    <color name="purple_marker">#BFCF1CE4</color>
+    <color name="yellowish_marker">#BFAFC91F</color>
+    <color name="live_group_zero_x_box">#FF797E83</color>
+    <color name="live_group_zero_plus_box">#FF32C59A</color>
+    <color name="theme_gray">#FF191A1C</color>
+    <color name="light_green">#FFE5FFCC</color>
+    <color name="white">#FFFFFFFF</color>
 </resources>

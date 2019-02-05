@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.penda.mylistkeeper.MainActivity">
+
+    <item
+        android:id="@+id/action_add_list"
+        android:icon="@drawable/ic_add_black_24dp"
+        android:title="Add"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/restore_list"
+        android:title="Restore List"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/rename_list"
+        android:title="Rename List"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_share_list"
+        android:title="Share"
+        android:icon="@drawable/ic_share_white_24dp"
+        app:showAsAction="always"/>
+
+</menu>
