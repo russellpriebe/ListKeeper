@@ -1,6 +1,6 @@
 package com.penda.listkeeper.repository
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import com.penda.listkeeper.ListRoomDatabase
 import com.penda.listkeeper.datamodel.ListElement
 import com.penda.listkeeper.datamodel.ListElementDao

@@ -2,8 +2,8 @@ package com.penda.listkeeper.adapter
 
 import android.content.Context
 import android.content.Intent
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +13,7 @@ import com.penda.listkeeper.R
 import com.penda.listkeeper.datamodel.MList
 import kotlinx.android.synthetic.main.recycler_list_row.view.*
 
-class CardListAdapter(val viewModel: ListViewModel, val context: Context?) : RecyclerView.Adapter<CardListAdapter.ViewHolder>(){
+class CardListAdapter(val viewModel: ListViewModel, val context: Context?) : androidx.recyclerview.widget.RecyclerView.Adapter<CardListAdapter.ViewHolder>(){
 
     var cardList = ArrayList<MList>()
     lateinit var mList : List<MList>
@@ -50,7 +50,7 @@ class CardListAdapter(val viewModel: ListViewModel, val context: Context?) : Rec
         }
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
+    class ViewHolder(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view){
         val dueDate = view.date_added
         val name = view.item_name
         val card = view.cardview
@@ -89,11 +89,11 @@ class CardListAdapter(val viewModel: ListViewModel, val context: Context?) : Rec
     {
         var cardAdapter = adapter
 
-        override fun onSwiped(p0: RecyclerView.ViewHolder, p1: Int) {
+        override fun onSwiped(p0: androidx.recyclerview.widget.RecyclerView.ViewHolder, p1: Int) {
             cardAdapter.removeItem(p0.adapterPosition)
         }
 
-        override fun onMove(p0: RecyclerView, p1: RecyclerView.ViewHolder, p2: RecyclerView.ViewHolder): Boolean {
+        override fun onMove(p0: androidx.recyclerview.widget.RecyclerView, p1: androidx.recyclerview.widget.RecyclerView.ViewHolder, p2: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
             cardAdapter.onMovedSub(p1.adapterPosition, p2.adapterPosition)
             return true
         }

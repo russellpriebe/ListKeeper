@@ -2,31 +2,35 @@ package com.penda.listkeeper
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognizerIntent
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager
+import android.speech.SpeechRecognizer
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
-import android.widget.EditText
-import android.widget.LinearLayout
 import com.penda.listkeeper.datamodel.ListElement
 import com.penda.listkeeper.adapter.ElementListAdapter
 import com.penda.listkeeper.viewmodel.ElementViewModel
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 import android.util.Log
+import android.widget.*
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import com.penda.listkeeper.datamodel.MList
 import com.penda.listkeeper.repository.ElementRepository
 import com.penda.listkeeper.viewmodel.VMProviderFactory
 import kotlinx.android.synthetic.main.activity_create_list.*
 import kotlinx.android.synthetic.main.add_call_notes.view.*
 import kotlinx.android.synthetic.main.content_create_list.*
+import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.toast
 import java.util.*
 
@@ -40,6 +44,12 @@ class CreateList : AppCompatActivity() {
     private lateinit var mElementRepository: ElementRepository
     private var supressRefresh = false
     private lateinit var barTitle: String
+    private lateinit var mSpeechRecognizer : SpeechRecognizer
+    private lateinit var mSpeechRecognizerIntent: Intent
+    private lateinit var listener: SpeechRecognizerListener
+    private lateinit var micButtonBlue: ImageButton
+    private lateinit var micButtonRed: ImageButton
+    private val context:Context = this
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +58,8 @@ class CreateList : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         newList = intent.getBooleanExtra("newList",false)
+        MobileAds.initialize(this, resources.getString(R.string.admobtestid))
+        adViewC.loadAd(AdRequest.Builder().build())
         if(!newList){
             tag = intent.getStringExtra("tag")
             barTitle = intent.getStringExtra("list")
@@ -55,8 +67,33 @@ class CreateList : AppCompatActivity() {
             tag = getTag()
         }
         setUpRecyclerView(this)
-
+        createRecognizer()
     }
+
+    private fun createRecognizer(){
+        mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
+        mSpeechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, this.packageName)
+        listener = SpeechRecognizerListener(mSpeechRecognizer)
+        mSpeechRecognizer.setRecognitionListener(listener)
+        listener.mText.observe(this, Observer{ txt ->
+            txt?.let {
+                micButtonBlue.visibility = View.VISIBLE
+                micButtonRed.visibility = View.GONE
+                when(it){
+                    "null" ->  Toast.makeText(context, "Missed that.. please try again", Toast.LENGTH_SHORT).show()
+                    "error" -> { Toast.makeText(context, "Missed that.. please try again", Toast.LENGTH_SHORT).show()
+                                 mSpeechRecognizer.destroy()
+                                 createRecognizer()
+                    }
+                    else -> speechToText.append(" $it")
+
+                }
+            }
+        })
+    }
+
 
 
     private fun setUpRecyclerView(context: Context) {
@@ -66,7 +103,8 @@ class CreateList : AppCompatActivity() {
         mElementRepository = ElementRepository(db, tag)
         viewModel.setRepository(mElementRepository, tag)
 
-        element_recycler.layoutManager = LinearLayoutManager(context, LinearLayout.VERTICAL, false)
+        element_recycler.layoutManager =
+                androidx.recyclerview.widget.LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         adapter = ElementListAdapter(viewModel, context)
         element_recycler.adapter = adapter
         adapter.helper.attachToRecyclerView(element_recycler)
@@ -188,7 +226,8 @@ class CreateList : AppCompatActivity() {
         val builder = AlertDialog.Builder(this, R.style.MyAlertDialogStyle)
         val dialogView = layoutInflater.inflate(R.layout.add_call_notes, null)
         builder.setView(dialogView)
-
+        micButtonBlue = dialogView.findViewById(R.id.speech_to_text) as ImageButton
+        micButtonRed = dialogView.findViewById(R.id.speech_to_text_red) as ImageButton
         speechToText = dialogView.notes
         dialogView.speech_to_text.setOnClickListener {
             supressRefresh = true
@@ -226,7 +265,6 @@ class CreateList : AppCompatActivity() {
             dialog.dismiss()
             when {
                 showAddElement -> {
-                    Log.d("wtfwtf", "save click listener")
                     viewModel.handleElementAddition(speechToText.getText().toString(), tag)
                 }
                 isEditTitle -> {
@@ -276,7 +314,7 @@ class CreateList : AppCompatActivity() {
     }
 
     private fun getSpeechInput() {
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        /*val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         intent.apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
@@ -286,7 +324,10 @@ class CreateList : AppCompatActivity() {
             startActivityForResult(intent, REQUEST_SPEECH_INPUT)
         } catch (a: ActivityNotFoundException) {
             toast("Speech to Text not supported.")
-        }
+        }*/
+        micButtonBlue.visibility = View.GONE
+        micButtonRed.visibility = View.VISIBLE
+        mSpeechRecognizer.startListening(mSpeechRecognizerIntent)
 
     }
 
@@ -301,5 +342,10 @@ class CreateList : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mSpeechRecognizer.destroy()
     }
 }

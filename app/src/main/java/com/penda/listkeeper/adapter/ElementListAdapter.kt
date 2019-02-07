@@ -1,11 +1,11 @@
 package com.penda.listkeeper.adapter
 
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import android.content.Context
 import android.graphics.Paint
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ItemTouchHelper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +16,7 @@ import com.penda.listkeeper.datamodel.OrdinalListElement
 import com.penda.listkeeper.viewmodel.ElementViewModel
 import kotlinx.android.synthetic.main.recycler_list_cardview.view.*
 
-class ElementListAdapter(viewModel: ElementViewModel, val context: Context?) : RecyclerView.Adapter<ElementListAdapter.ViewHolder>(){
+class ElementListAdapter(viewModel: ElementViewModel, val context: Context?) : androidx.recyclerview.widget.RecyclerView.Adapter<ElementListAdapter.ViewHolder>(){
 
     var elementList = ArrayList<ListElement>()
     private var localViewModel = viewModel
@@ -97,7 +97,7 @@ class ElementListAdapter(viewModel: ElementViewModel, val context: Context?) : R
         }
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
+    class ViewHolder(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view){
         val name = view.element_item_name
         val card = view.element_cardview
         val checkOffList = view.checkoff
@@ -140,16 +140,16 @@ class ElementListAdapter(viewModel: ElementViewModel, val context: Context?) : R
         private var cardAdapter = adapter
         private var mFlag = flag
 
-        override fun onSwiped(p0: RecyclerView.ViewHolder, p1: Int) {
+        override fun onSwiped(p0: androidx.recyclerview.widget.RecyclerView.ViewHolder, p1: Int) {
             cardAdapter.removeItem(p0.adapterPosition)
         }
 
-        override fun onMove(p0: RecyclerView, p1: RecyclerView.ViewHolder, p2: RecyclerView.ViewHolder): Boolean {
+        override fun onMove(p0: androidx.recyclerview.widget.RecyclerView, p1: androidx.recyclerview.widget.RecyclerView.ViewHolder, p2: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
             cardAdapter.onMovedSub(p1.adapterPosition, p2.adapterPosition)
             return true
         }
 
-        override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+        override fun clearView(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
             super.clearView(recyclerView, viewHolder)
             val localCopy = cardAdapter.elementList
             mFlag.postValue(localCopy)
