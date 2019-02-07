@@ -23,7 +23,7 @@
         <activity
             android:name=".CreateList"
             android:label="@string/title_activity_create_list"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar"/>
         <provider
             android:name="android.support.v4.content.FileProvider"
