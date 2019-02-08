@@ -37,6 +37,7 @@
             android:background="@android:color/black">
 
             <ImageView
+                android:id="@+id/fisheye"
                 android:layout_width="55dp"
                 android:layout_height="55dp"
                 android:layout_gravity="center"
@@ -63,8 +64,6 @@
                 android:layout_marginStart="20dp"
                 android:background="@drawable/ic_add_circle_red" />
         </FrameLayout>
-
-
     </LinearLayout>
     <View
         android:layout_width="match_parent"

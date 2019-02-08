@@ -58,7 +58,7 @@ class CreateList : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         newList = intent.getBooleanExtra("newList",false)
-        MobileAds.initialize(this, resources.getString(R.string.admobtestid))
+        MobileAds.initialize(this, resources.getString(R.string.admobid))
         adViewC.loadAd(AdRequest.Builder().build())
         if(!newList){
             tag = intent.getStringExtra("tag")
@@ -80,6 +80,7 @@ class CreateList : AppCompatActivity() {
         listener.mText.observe(this, Observer{ txt ->
             txt?.let {
                 micButtonBlue.visibility = View.VISIBLE
+                micButtonRed.clearAnimation()
                 micButtonRed.visibility = View.GONE
                 when(it){
                     "null" ->  Toast.makeText(context, "Missed that.. please try again", Toast.LENGTH_SHORT).show()
@@ -188,7 +189,7 @@ class CreateList : AppCompatActivity() {
                 val date = intent.getStringExtra("date")
                 val shareList = adapter.getNormalElementList()
                 tag?.let {
-                    val mList = MList(tag!!, "none", title, date)
+                    val mList = MList(it, "none", title, date)
                     Utilities.buildShareIntent(mList, shareList, this)
                 }
                 return true
@@ -228,7 +229,14 @@ class CreateList : AppCompatActivity() {
         builder.setView(dialogView)
         micButtonBlue = dialogView.findViewById(R.id.speech_to_text) as ImageButton
         micButtonRed = dialogView.findViewById(R.id.speech_to_text_red) as ImageButton
+        val fisheye = dialogView.findViewById<ImageView>(R.id.fisheye)
         speechToText = dialogView.notes
+        val speechEnabled = Utilities.getPrefs("speechenabled", true, context).getBoolean("speechenabled")
+        if(!speechEnabled){
+            micButtonBlue.visibility = View.GONE
+            micButtonRed.visibility = View.GONE
+            fisheye.visibility = View.GONE
+        }
         dialogView.speech_to_text.setOnClickListener {
             supressRefresh = true
             getSpeechInput()
@@ -327,6 +335,7 @@ class CreateList : AppCompatActivity() {
         }*/
         micButtonBlue.visibility = View.GONE
         micButtonRed.visibility = View.VISIBLE
+        micButtonRed.startAnimation(Utilities.animateMic())
         mSpeechRecognizer.startListening(mSpeechRecognizerIntent)
 
     }

@@ -27,6 +27,7 @@ import android.speech.SpeechRecognizer
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 
 
 class MainActivity : AppCompatActivity() {
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         toolbar.title = resources.getString(R.string.title)
-        MobileAds.initialize(this, resources.getString(R.string.admobtestid))
+        MobileAds.initialize(this, resources.getString(R.string.admobid))
         adView.loadAd(AdRequest.Builder().build())
         setUpRecyclerView(context)
         checkPermissions()
@@ -53,8 +54,6 @@ class MainActivity : AppCompatActivity() {
     private fun checkPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), MY_PERMISSIONS_REQUEST_RECORD_AUDIO)
-        } else {
-            //setUpRecyclerView(context)
         }
     }
 
@@ -63,9 +62,10 @@ class MainActivity : AppCompatActivity() {
             MY_PERMISSIONS_REQUEST_RECORD_AUDIO -> {
                 // If request is cancelled, the result arrays are empty.
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                  //  setUpRecyclerView(context)
+                    Utilities.putPrefs(true, "speechenabled", context)
                 } else {
                     Toast.makeText(this, "Speech Input will be disabled without this permission", Toast.LENGTH_LONG).show()
+                    Utilities.putPrefs(false, "speechenabled", context)
                 }
             }
 
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.setRepository(mListRepository)
 
         list_recycler.layoutManager =
-                androidx.recyclerview.widget.LinearLayoutManager(context, LinearLayout.VERTICAL, false)
+                androidx.recyclerview.widget.LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         adapter = CardListAdapter(viewModel, context)
         list_recycler.adapter = adapter
         adapter.helper.attachToRecyclerView(list_recycler)
