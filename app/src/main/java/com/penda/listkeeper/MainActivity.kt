@@ -1,40 +1,70 @@
 package com.penda.listkeeper
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.RecyclerView
 import com.penda.listkeeper.adapter.CardListAdapter
 import com.penda.listkeeper.repository.ListRepository
 import com.penda.listkeeper.viewmodel.ListViewModel
 import com.penda.listkeeper.viewmodel.VMProviderFactory
 import kotlinx.android.synthetic.main.activity_main.*
-
 import kotlinx.android.synthetic.main.content_main.*
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: ListViewModel
     private lateinit var mListRepository: ListRepository
     private lateinit var adapter: CardListAdapter
+    private val MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 101
+    private val context: Context = this
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         toolbar.title = resources.getString(R.string.title)
-        val context: Context = this
 
         setUpRecyclerView(context)
-
+        checkPermissions()
     }
 
+
+    private fun checkPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), MY_PERMISSIONS_REQUEST_RECORD_AUDIO)
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            MY_PERMISSIONS_REQUEST_RECORD_AUDIO -> {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    Utilities.putPrefs(true, "speechenabled", context)
+                } else {
+                    Toast.makeText(this, "Speech Input will be disabled without this permission", Toast.LENGTH_LONG).show()
+                    Utilities.putPrefs(false, "speechenabled", context)
+                }
+            }
+
+            else -> {
+                // Ignore all other requests.
+            }
+        }
+    }
     private fun setUpRecyclerView(context: Context) {
 
         viewModel = ViewModelProviders.of(this, VMProviderFactory.viewModelFactory).get(ListViewModel::class.java)
@@ -42,15 +72,16 @@ class MainActivity : AppCompatActivity() {
         mListRepository = ListRepository(db)
         viewModel.setRepository(mListRepository)
 
-        list_recycler.layoutManager = LinearLayoutManager(context, LinearLayout.VERTICAL, false)
+        list_recycler.layoutManager =
+                androidx.recyclerview.widget.LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         adapter = CardListAdapter(viewModel, context)
         list_recycler.adapter = adapter
         adapter.helper.attachToRecyclerView(list_recycler)
 
         viewModel.cardsList.observe(this, Observer {
-                            it?.let {
-                                adapter.setCardList(it)
-                            }
+            it?.let {
+                adapter.setCardList(it)
+            }
         })
         viewModel.shareElements.observe(this, Observer {
             it?.let{

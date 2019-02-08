@@ -1,6 +1,6 @@
 package com.penda.listkeeper.viewmodel
 
-import android.arch.lifecycle.*
+import androidx.lifecycle.*
 import android.text.TextUtils
 import com.penda.listkeeper.repository.ElementRepository
 import com.penda.listkeeper.Utilities
