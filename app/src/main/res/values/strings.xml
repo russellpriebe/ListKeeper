@@ -3,8 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="title">Lists</string>
     <string name="title_activity_create_list">CreateList</string>
-    <string name="admobid">ca-app-pub-9969242464788832~9669309951</string>
-    <string name="admobtestid">ca-app-pub-3940256099942544/6300978111</string>
+
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -45,9 +45,11 @@ class ElementListAdapter(viewModel: ElementViewModel, val context: Context?) : a
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.name.text = elementList[position].elementValue
         holder.card.setOnClickListener {
-            val str = holder.name.text.toString()
-            Log.d("holder name", str)
-            isEdit.postValue ( str )
+            if(elementList[position].elementState.equals("active")) {
+                val str = holder.name.text.toString()
+                Log.d("holder name", str)
+                isEdit.postValue(str)
+            }
         }
         holder.checkOffList.setOnClickListener {
             elementList[position].elementState = "inactive"

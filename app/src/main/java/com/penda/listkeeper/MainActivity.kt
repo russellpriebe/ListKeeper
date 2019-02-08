@@ -1,33 +1,25 @@
 package com.penda.listkeeper
 
 import android.Manifest
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.preference.PreferenceManager
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.LinearLayout
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.MobileAds
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.RecyclerView
 import com.penda.listkeeper.adapter.CardListAdapter
 import com.penda.listkeeper.repository.ListRepository
 import com.penda.listkeeper.viewmodel.ListViewModel
 import com.penda.listkeeper.viewmodel.VMProviderFactory
 import kotlinx.android.synthetic.main.activity_main.*
-
 import kotlinx.android.synthetic.main.content_main.*
-import android.speech.RecognizerIntent
-import android.speech.SpeechRecognizer
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.RecyclerView
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,8 +36,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         toolbar.title = resources.getString(R.string.title)
-        MobileAds.initialize(this, resources.getString(R.string.admobid))
-        adView.loadAd(AdRequest.Builder().build())
+
         setUpRecyclerView(context)
         checkPermissions()
     }
@@ -88,9 +79,9 @@ class MainActivity : AppCompatActivity() {
         adapter.helper.attachToRecyclerView(list_recycler)
 
         viewModel.cardsList.observe(this, Observer {
-                            it?.let {
-                                adapter.setCardList(it)
-                            }
+            it?.let {
+                adapter.setCardList(it)
+            }
         })
         viewModel.shareElements.observe(this, Observer {
             it?.let{

@@ -2,37 +2,33 @@ package com.penda.listkeeper
 
 import android.app.Activity
 import android.app.AlertDialog
-import androidx.lifecycle.ViewModelProviders
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
-import com.penda.listkeeper.datamodel.ListElement
-import com.penda.listkeeper.adapter.ElementListAdapter
-import com.penda.listkeeper.viewmodel.ElementViewModel
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import android.util.Log
-import android.widget.*
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.MobileAds
+import com.penda.listkeeper.adapter.ElementListAdapter
+import com.penda.listkeeper.datamodel.ListElement
 import com.penda.listkeeper.datamodel.MList
 import com.penda.listkeeper.repository.ElementRepository
+import com.penda.listkeeper.viewmodel.ElementViewModel
 import com.penda.listkeeper.viewmodel.VMProviderFactory
 import kotlinx.android.synthetic.main.activity_create_list.*
 import kotlinx.android.synthetic.main.add_call_notes.view.*
 import kotlinx.android.synthetic.main.content_create_list.*
-import kotlinx.android.synthetic.main.content_main.*
-import org.jetbrains.anko.toast
-import java.util.*
 
 class CreateList : AppCompatActivity() {
     private val REQUEST_SPEECH_INPUT = 101
@@ -58,8 +54,6 @@ class CreateList : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         newList = intent.getBooleanExtra("newList",false)
-        MobileAds.initialize(this, resources.getString(R.string.admobid))
-        adViewC.loadAd(AdRequest.Builder().build())
         if(!newList){
             tag = intent.getStringExtra("tag")
             barTitle = intent.getStringExtra("list")
