@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.penda.listkeeper.adapter.CardListAdapter
 import com.penda.listkeeper.repository.ListRepository
 import com.penda.listkeeper.viewmodel.ListViewModel
-import com.penda.listkeeper.viewmodel.VMProviderFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
@@ -66,26 +65,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun setUpRecyclerView(context: Context) {
-
-        viewModel = ViewModelProviders.of(this, VMProviderFactory.viewModelFactory).get(ListViewModel::class.java)
         val db = ListRoomDatabase.getDatabase(context)
         mListRepository = ListRepository(db)
-        viewModel.setRepository(mListRepository)
+        viewModel = ViewModelProviders
+            .of(this, ListViewModel.FACTORY(mListRepository))
+            .get(ListViewModel::class.java)
 
-        list_recycler.layoutManager =
-                androidx.recyclerview.widget.LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        list_recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         adapter = CardListAdapter(viewModel, context)
         list_recycler.adapter = adapter
         adapter.helper.attachToRecyclerView(list_recycler)
-
+        viewModel.getListForAdapter()
         viewModel.cardsList.observe(this, Observer {
-            it?.let {
-                adapter.setCardList(it)
+            it?.let { mList ->
+                adapter.setCardList(mList)
             }
         })
         viewModel.shareElements.observe(this, Observer {
-            it?.let{
-                Utilities.buildShareIntent(it.list, it.elements, context)
+            it?.let{ shareBundle ->
+                Utilities.buildShareIntent(shareBundle.list, shareBundle.elements, context)
             }
         })
     }
