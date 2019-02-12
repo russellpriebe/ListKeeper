@@ -25,7 +25,6 @@ import com.penda.listkeeper.datamodel.ListElement
 import com.penda.listkeeper.datamodel.MList
 import com.penda.listkeeper.repository.ElementRepository
 import com.penda.listkeeper.viewmodel.ElementViewModel
-import com.penda.listkeeper.viewmodel.VMProviderFactory
 import kotlinx.android.synthetic.main.activity_create_list.*
 import kotlinx.android.synthetic.main.add_call_notes.view.*
 import kotlinx.android.synthetic.main.content_create_list.*
@@ -89,21 +88,19 @@ class CreateList : AppCompatActivity() {
         })
     }
 
-
-
     private fun setUpRecyclerView(context: Context) {
-
-        viewModel = ViewModelProviders.of(this, VMProviderFactory.viewModelFactory).get(ElementViewModel::class.java)
         val db = ListRoomDatabase.getDatabase(context)
         mElementRepository = ElementRepository(db, tag)
-        viewModel.setRepository(mElementRepository, tag)
+        viewModel = ViewModelProviders
+            .of(this, ElementViewModel.FACTORY(mElementRepository))
+            .get(ElementViewModel::class.java)
 
         element_recycler.layoutManager =
                 androidx.recyclerview.widget.LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         adapter = ElementListAdapter(viewModel, context)
         element_recycler.adapter = adapter
         adapter.helper.attachToRecyclerView(element_recycler)
-
+        viewModel.getElements(tag)
         viewModel.elementsList.observe(this, Observer{ mList ->
             mList?.let {
                 adapter.setElementList(it)
@@ -316,17 +313,6 @@ class CreateList : AppCompatActivity() {
     }
 
     private fun getSpeechInput() {
-        /*val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        intent.apply {
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-        }
-
-        try {
-            startActivityForResult(intent, REQUEST_SPEECH_INPUT)
-        } catch (a: ActivityNotFoundException) {
-            toast("Speech to Text not supported.")
-        }*/
         micButtonBlue.visibility = View.GONE
         micButtonRed.visibility = View.VISIBLE
         micButtonRed.startAnimation(Utilities.animateMic())
@@ -336,7 +322,6 @@ class CreateList : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         supressRefresh = false
-        Log.d("wtfwtf", "onactivityresult")
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_SPEECH_INPUT) {
                 if (null != data) {

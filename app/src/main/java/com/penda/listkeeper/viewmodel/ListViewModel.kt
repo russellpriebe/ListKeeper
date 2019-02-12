@@ -6,23 +6,34 @@ import androidx.lifecycle.ViewModel
 import com.penda.listkeeper.repository.ListRepository
 import com.penda.listkeeper.datamodel.MList
 import com.penda.listkeeper.datamodel.ShareBundle
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
-class ListViewModel: ViewModel() {
+class ListViewModel(private val mRepository: ListRepository): ViewModel() {
     lateinit var cardsList: LiveData<List<MList >>
     val shareElements: MutableLiveData<ShareBundle> = MutableLiveData()
-    private lateinit var mRepository: ListRepository
+    private val viewModelJob = Job()
+    private val uiScope = CoroutineScope(Dispatchers.IO + viewModelJob)
 
-    fun setRepository(listRepository: ListRepository){
-        mRepository = listRepository
-        cardsList = mRepository.getLists()
+
+    companion object {
+        /**
+         * Factory for creating [MainViewModel]
+         *
+         * @param arg the repository to pass to [MainViewModel]
+         */
+        val FACTORY = singleArgViewModelFactory(::ListViewModel)
     }
 
-    fun getLists() {
-        cardsList =  mRepository.getLists()
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
+    }
+
+    fun getListForAdapter(){
+            cardsList =  mRepository.getLists()
     }
 
     fun deleteList(list: MList){
@@ -30,33 +41,16 @@ class ListViewModel: ViewModel() {
     }
 
     fun reorderList(list: ArrayList<MList>){
-        launch(){
-            val result = reorder(list)
-            if(result.await()){
-                cardsList = mRepository.getLists()
-            }
-        }
-    }
-
-    private fun reorder(list: ArrayList<MList>): Deferred<Boolean>{
-        return async{
+        uiScope.launch(Dispatchers.IO){
             mRepository.reorderListList(list)
-            true
+            cardsList = mRepository.getLists()
         }
     }
 
     fun share(list: MList){
-        launch(){
-            val result = getElementsForShare(list)
-            shareElements.postValue(result.await())
+        uiScope.launch(Dispatchers.IO){
+            val result = mRepository.getElements(list)
+            shareElements.postValue(ShareBundle(list, result))
         }
     }
-
-    private fun getElementsForShare(list: MList): Deferred<ShareBundle>{
-        return async(CommonPool){
-            val tem = mRepository.getElements(list)
-            ShareBundle(list, tem)
-        }
-    }
-
 }
